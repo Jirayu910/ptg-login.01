@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>PTG Fleet HR-lite</title>
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="script.js"></script>
+</head>
+<body>
+
+  <!-- Login -->
+  <section class="login-wrap" id="loginWrap">
+    <div class="login-card">
+      <div class="login-logo">
+        <img src="0.png" alt="PTG Logo" />
+      </div>
+      <h1>สวัสดีจ้า ✨</h1>
+      <p class="muted">เข้าสู่ระบบน่ารัก ใช้ง่าย (กัน iPhone ซูมเอง)</p>
+
+      <form id="loginForm" class="login-form" novalidate>
+        <label>อีเมล
+          <input type="email" id="loginEmail" placeholder="you@ptg.local" required>
+        </label>
+        <label>รหัสผ่าน
+          <input type="password" id="loginPass" placeholder="อย่างน้อย 8 ตัว" required>
+        </label>
+        <button class="btn primary" type="submit">เข้าสู่ระบบ</button>
+      </form>
+
+      <div class="login-or"><span>หรือ</span></div>
+      <div class="login-quick">
+        <select id="demoUserSelect"></select>
+        <button class="btn soft" id="btnFill">ใช้บัญชีตัวอย่าง</button>
+      </div>
+      <small class="muted" id="demoCred">เลือกบัญชีเพื่อกรอกอัตโนมัติ</small>
+    </div>
+  </section>
+
+  <!-- App -->
+  <div class="app" id="appRoot" hidden>
+    <header class="header">
+      <div class="logo-pill"><img src="0.png" alt="PTG" /></div>
+      <div>
+        <h1>Fleet HR-lite</h1>
+        <p class="muted">ผู้ใช้ • การทำงาน • ยานพาหนะ • บัญชี • ตลาดน้ำมัน</p>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn ghost" id="btnLogout">ออกจากระบบ</button>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="users">ผู้ใช้</button>
+      <button class="tab" data-tab="attendance">การทำงาน</button>
+      <button class="tab" data-tab="fleet">ยานพาหนะ</button>
+      <button class="tab" data-tab="accounting">บัญชี</button>
+      <button class="tab" data-tab="market">ตลาดน้ำมัน</button>
+    </nav>
+
+    <!-- Users -->
+    <section class="panel show" id="tab-users">
+      <div class="panel-head">
+        <h2>ผู้ใช้</h2>
+        <div class="chips">
+          <span class="badge">คนขับ <b id="cDrivers">0</b></span>
+          <span class="badge">บัญชี <b id="cAcc">0</b></span>
+          <span class="badge">GPS <b id="cGps">0</b></span>
+          <span class="badge">หัวหน้างาน <b id="cSup">0</b></span>
+          <span class="badge ok">CEO: <b>คุณชาตรี</b></span>
+        </div>
+      </div>
+      <div class="filters row">
+        <input id="qUser" class="input" placeholder="ค้นหาชื่อ/อีเมล..." />
+        <select id="roleFilter" class="input">
+          <option value="">ทุกบทบาท</option>
+          <option>Driver</option>
+          <option>Accounting</option>
+          <option>GPS</option>
+          <option>หัวหน้างาน</option>
+          <option>CEO</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table id="tblUsers" class="pretty-table">
+          <thead><tr><th>ชื่อ</th><th>อีเมล</th><th>บทบาท</th><th>ใบเตือน</th><th>สถานะ</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Attendance -->
+    <section class="panel" id="tab-attendance">
+      <div id="attControls" class="row">
+        <select id="attUser" class="input"></select>
+        <input id="attMonth" class="input" type="month" />
+      </div>
+      <div id="attSummary" class="cards row">
+        <div class="stat card"><div class="k">มาทำงาน</div><div class="v ok" id="attPresent">0</div></div>
+        <div class="stat card"><div class="k">ไม่มา</div><div class="v bad" id="attAbsent">0</div></div>
+        <div class="stat card"><div class="k">ใบเตือน</div><div class="v warn" id="attWarn">0</div></div>
+      </div>
+      <div id="attNotice" hidden><p class="muted">❌ เฉพาะหัวหน้างานและ CEO</p></div>
+      <div class="table-wrap">
+        <table id="tblAtt" class="pretty-table">
+          <thead><tr><th>วันที่</th><th>สถานะ</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Fleet -->
+    <section class="panel" id="tab-fleet">
+      <div class="row">
+        <select id="fleetStatus" class="input">
+          <option value="">ทุกสถานะ</option>
+          <option value="available">ว่าง</option>
+          <option value="assigned">ใช้งาน</option>
+          <option value="maintenance">ซ่อม</option>
+        </select>
+        <input id="fleetSearch" class="input" placeholder="ค้นหาทะเบียน/รุ่น..." />
+      </div>
+      <div class="chips" id="modelChips"></div>
+      <div class="cards row">
+        <div class="stat card"><div class="k">รถว่าง</div><div class="v ok" id="fleetAvail">0</div></div>
+        <div class="stat card"><div class="k">กำลังใช้งาน</div><div class="v" id="fleetAssign">0</div></div>
+        <div class="stat card"><div class="k">ซ่อมบำรุง</div><div class="v warn" id="fleetMaint">0</div></div>
+      </div>
+      <div class="fleet-grid" id="fleetGrid"></div>
+    </section>
+
+    <!-- Accounting -->
+    <section class="panel" id="tab-accounting">
+      <div class="panel-head">
+        <h2>บัญชี (รายได้–ต้นทุน)</h2>
+        <div class="chips">
+          <span class="badge ok">กำไรสะสม: <b id="accProfit">0</b> ฿</span>
+          <span class="badge">รายได้รวม: <b id="accIncome">0</b> ฿</span>
+          <span class="badge warn">ต้นทุนรวม: <b id="accCost">0</b> ฿</span>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:8px">
+        <select id="accYear" class="input"></select>
+        <select id="accType" class="input">
+          <option value="income">รายได้</option>
+          <option value="cost">ต้นทุน</option>
+        </select>
+        <input id="accDesc" class="input" placeholder="รายการ (เช่น รับจ้างขนส่ง / ค่าน้ำมัน / ค่าทางด่วน)"/>
+        <input id="accAmt" class="input" type="number" step="0.01" placeholder="จำนวนเงิน (฿)"/>
+        <button class="btn" id="accAdd">บันทึก</button>
+        <button class="btn soft" id="accQuickFuel">+ ค่าน้ำมัน</button>
+        <button class="btn soft" id="accQuickToll">+ ค่าทางด่วน</button>
+      </div>
+
+      <div class="cards row" style="margin-top:12px">
+        <div class="card" style="flex:1;min-width:320px">
+          <div class="k">กราฟสรุปรายปี (พ.ศ.)</div>
+          <canvas id="accYearChart" class="chart-canvas"></canvas>
+        </div>
+        <div class="card" style="flex:1;min-width:320px">
+          <div class="k">กราฟรายเดือนปี <span id="accSelectedYear">—</span></div>
+          <canvas id="accMonthlyChart" class="chart-canvas"></canvas>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <div class="k">สรุปรายปี (พ.ศ.)</div>
+        <div class="table-wrap" style="margin-top:8px">
+          <table id="accYearTable" class="pretty-table">
+            <thead><tr><th>พ.ศ.</th><th>รายได้ (฿)</th><th>ต้นทุน (฿)</th><th>กำไร (฿)</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="table-wrap" style="margin-top:12px">
+        <table id="accTable" class="pretty-table">
+          <thead><tr><th>วันที่</th><th>ประเภท</th><th>รายละเอียด</th><th style="text-align:right">จำนวนเงิน (฿)</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Oil Market -->
+    <section class="panel" id="tab-market">
+      <div class="panel-head">
+        <h2>ตลาดน้ำมัน (จำลอง)</h2>
+        <div class="chips">
+          <span class="badge">สกุลเงิน:
+            <select id="mkCurrency" class="input" style="height:28px">
+              <option value="USD">USD</option>
+              <option value="THB" selected>THB</option>
+            </select>
+          </span>
+          <button class="btn soft" id="mkRefresh">อัปเดตราคา (จำลอง)</button>
+        </div>
+      </div>
+
+      <div class="market-grid">
+        <div class="market-left">
+          <div class="cards row" style="margin-top:0">
+            <div class="stat card"><div class="k">Brent</div><div class="v" id="mkBrent">—</div><div class="muted"><span id="mkBrentChg" class="pill">0%</span></div></div>
+            <div class="stat card"><div class="k">WTI</div><div class="v" id="mkWTI">—</div><div class="muted"><span id="mkWTIChg" class="pill">0%</span></div></div>
+            <div class="stat card"><div class="k">Dubai</div><div class="v" id="mkDubai">—</div><div class="muted"><span id="mkDubaiChg" class="pill">0%</span></div></div>
+          </div>
+
+          <div class="card mk-card-table">
+            <div class="k">ราคาขายปลีกหน้า ปั๊ม (฿/ลิตร)</div>
+            <div class="table-wrap mk-wrap" style="margin-top:8px">
+              <table id="mkPumpTableSlim" class="pretty-table mk-table">
+                <thead>
+                  <tr>
+                    <th class="sticky-col">สถานี</th>
+                    <th class="num">B7</th>
+                    <th class="num">G95</th>
+                    <th class="num">G91</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <small class="muted">* คำนวณจำลองจาก Benchmark + ค่าการตลาด</small>
+          </div>
+        </div>
+
+        <div class="market-right">
+          <div class="card" style="height:100%">
+            <div class="k">กราฟราคาตามปั๊ม (฿/ลิตร)</div>
+            <canvas id="mkPumpChart" class="chart-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <small class="muted" style="display:block;margin-top:8px">* ข้อมูลนี้เป็นการจำลองเพื่อทดสอบ UI เท่านั้น</small>
+    </section>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+      <svg viewBox="0 0 52 52" class="check">
+        <path d="M14 27 l8 8 l16 -18" fill="none" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span id="toastText">ดำเนินการแล้ว</span>
+    </div>
+  </div>
+</body>
+</html>
